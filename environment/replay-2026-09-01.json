@@ -51,7 +51,7 @@
     "BDC_BIAS": "results/bias_d0.65_L6_k6_m28.npy"
   },
   "cpu_count": 12,
-  "what_this_is": "The environment of the full 2^30-state Bellman replay run on 2026-09-01, recorded immediately before it started.  It is NOT the environment that produced the stored certificates; that environment was never recorded.  See environment/README.md.",
+  "what_this_is": "The environment of the full 2^30-state Bellman replay run on 2026-09-01.  The probes in this record were taken at recorded_utc, 33 minutes before the successful run began (they were taken before an earlier launch of the same command on the same machine and venv, which the session's task manager terminated after ~9 minutes; nothing about the machine changed in between).  It is NOT the environment that produced the stored certificates; that environment was never recorded.  See environment/README.md.",
   "replay_result": {
     "command": "BDC_NP=12 BDC_M1F=14 BDC_BIAS=results/bias_d0.65_L6_k6_m28.npy python -m src.audit_rigor 13 20 6 6 30 results/q_d0.65_L6_k6_kraft.npz",
     "started_utc": "2026-09-01T18:00:23Z",
@@ -68,6 +68,6 @@
     "endpoint_within_decimal": true,
     "result_archive_sha256": "9baef9f6ca6a5633219969b86c0033ed5a22e9732767e886c2a488eab2d93465",
     "reproduced_archived_result_bit_for_bit": true,
-    "note": "The regenerated rigor_d0.65_L6_k6_m30.npz is byte-identical to the archived one, so the exhaustive maximum reproduced exactly on different hardware and a newer NumPy.  Elapsed time differed by a factor of 2.4, which the claim does not depend on."
+    "note": "The regenerated rigor_d0.65_L6_k6_m30.npz is byte-identical to the archived one, so the exhaustive maximum reproduced exactly on different hardware and a newer NumPy.  Elapsed time differed by a factor of 2.4, which the claim does not depend on.  A first launch of the identical command was terminated by the session's task manager after ~9 minutes; no partial result from it was used."
   }
 }
