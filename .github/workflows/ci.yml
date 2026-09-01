@@ -1,0 +1,106 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  lean:
+    name: Lean (build Bdcproof.Cert)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: leanprover/lean-action@v1
+        with:
+          lake-package-directory: lean
+
+  python:
+    name: Python short checks
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install the declared dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements.txt
+
+      - name: Record the environment
+        run: python tools/print_environment.py -o environment-ci.json
+
+      # The lower checks need nothing beyond the repository, so they run first and give
+      # fast feedback.  The generator overwrites out/rigorous_lower_certificate.json;
+      # the following step requires that the regenerated file still verifies.
+      - name: Lower bound - regenerate, verify, adversarial tests
+        working-directory: lower
+        run: |
+          python run_rigorous_final.py
+          python verify_rigorous_certificate.py out/rigorous_lower_certificate.json
+          python test_rigorous_certificate.py
+
+      - name: Lower bound - only elapsed_seconds may differ from the committed certificate
+        working-directory: lower
+        run: |
+          git diff --exit-code --stat -- out/rigorous_lower_certificate.json || true
+          python - <<'PY'
+          import json, subprocess
+          new = json.loads(open("out/rigorous_lower_certificate.json").read())
+          old = json.loads(subprocess.run(
+              ["git", "show", "HEAD:lower/out/rigorous_lower_certificate.json"],
+              capture_output=True, text=True, check=True, cwd="..").stdout)
+          differing = sorted(k for k in set(old) | set(new) if old.get(k) != new.get(k))
+          print("differing fields:", differing)
+          assert differing in ([], ["elapsed_seconds"]), differing
+          print("every mathematical field reproduced")
+          PY
+
+      # The 1 GiB Bellman potential is a release asset, not repository content.  Cache it
+      # on its SHA-256 so ordinary pushes do not re-download it.
+      - name: Cache the release asset
+        id: bias-cache
+        uses: actions/cache@v4
+        with:
+          path: upper/results/bias_d0.65_L6_k6_m28.npy
+          key: bias-964ee2dd5df9209a2a455e41f2691c7ae163eec16e6fe6343dc59470e375c0bc
+
+      - name: Download the release asset
+        if: steps.bias-cache.outputs.cache-hit != 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release download v1.0 -R ${{ github.repository }} \
+            -p bias_d0.65_L6_k6_m28.npy -D upper/results/
+
+      - name: Authenticate the release asset before use
+        run: |
+          echo "964ee2dd5df9209a2a455e41f2691c7ae163eec16e6fe6343dc59470e375c0bc  upper/results/bias_d0.65_L6_k6_m28.npy" \
+            | sha256sum -c -
+
+      # This is the wrapper only.  It authenticates the inputs, rechecks Kraft at 300
+      # bits, and checks the stored endpoint.  It does NOT repeat the 2^30-state Bellman
+      # calculation, which is far outside an ordinary runner's budget.
+      - name: Upper bound - wrapper and adversarial tests
+        working-directory: upper
+        run: |
+          python -m src.verify_rigor_certificate results/rigor_d0.65_L6_k6_m30_manifest.json
+          python -m src.test_rigor_certificate
+
+      - name: Upper bound - the wrapper must refuse a missing input
+        working-directory: upper
+        run: |
+          mv results/bias_d0.65_L6_k6_m28.npy /tmp/bias.npy
+          if python -m src.verify_rigor_certificate results/rigor_d0.65_L6_k6_m30_manifest.json; then
+            echo "wrapper accepted a certificate with an absent input"; exit 1
+          fi
+          mv /tmp/bias.npy results/bias_d0.65_L6_k6_m28.npy
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: environment-record
+          path: environment-ci.json
