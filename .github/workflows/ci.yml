@@ -14,6 +14,17 @@ jobs:
       - uses: leanprover/lean-action@v1
         with:
           lake-package-directory: lean
+          # The default target is `Bdcproof`, whose root module imports Bdcproof.Cert,
+          # so `lake build` builds the certificate module and not just a boilerplate root.
+          build: 'true'
+          # Fail if any BDC declaration reaches an axiom outside the allowlist.  This is
+          # what makes "the project contains no `sorry`" a checked claim rather than a
+          # grep: it catches sorryAx, native_decide, and home-rolled axioms, including
+          # ones arriving through imports.  All eleven theorems in Cert.lean depend on
+          # exactly propext, Classical.choice, and Quot.sound.
+          axiom-audit: 'true'
+          axiom-audit-allow: 'propext,Classical.choice,Quot.sound'
+          axiom-audit-root: 'BDC'
 
   python:
     name: Python short checks

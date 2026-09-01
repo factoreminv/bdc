@@ -151,7 +151,9 @@ With Lean and Lake installed:
 (cd lean && lake exe cache get && lake build Bdcproof.Cert && lake build)
 ```
 
-The project contains no `sorry`. Lean proves the Bellman telescoping implication, a geometric
+The project contains no `sorry`, and continuous integration enforces it: the Lean job
+audits every `BDC` declaration and fails if any reaches an axiom outside
+`propext`, `Classical.choice`, `Quot.sound`. Lean proves the Bellman telescoping implication, a geometric
 tail inequality, an abstract upper-bound assembly lemma, the monotonicity-extension algebra
 conditional on the cited monotonicity result, preservation of lower bounds under retained
 nonnegative corrections, and the final lower-bound decimal arithmetic. It does not formalize
