@@ -1,0 +1,14 @@
+# Exact package versions of an environment in which the short checks were run and
+# passed on 2026-09-01 (see environment/verified-2026-09-01.json for the full record
+# and environment/README.md for what this file is and is not).
+#
+# This is NOT the environment that produced the stored certificates.  That environment
+# was not recorded and is not recoverable from the archived artifacts.
+#
+#     python3.12 -m venv .venv
+#     . .venv/bin/activate
+#     python -m pip install -r environment/requirements-tested-2026-09-01.txt
+mpmath==1.4.1
+numpy==2.5.2
+python-flint==0.9.0
+scipy==1.18.1

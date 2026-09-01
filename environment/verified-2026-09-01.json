@@ -1,0 +1,66 @@
+{
+  "recorded_utc": "2026-09-01T16:54:37+00:00",
+  "record_kind": "observed-on-a-verification-machine-2026-09-01",
+  "python": {
+    "version": "3.12.9",
+    "implementation": "CPython",
+    "compiler": "Clang 18.1.8 ",
+    "executable": ".venv/bin/python (path elided)"
+  },
+  "packages": {
+    "numpy": "2.5.2",
+    "scipy": "1.18.1",
+    "mpmath": "1.4.1",
+    "python_flint": "0.9.0"
+  },
+  "platform": {
+    "system": "Darwin",
+    "release": "25.6.0",
+    "platform": "macOS-26.6.2-arm64-arm-64bit",
+    "machine": "arm64",
+    "processor": "arm",
+    "libc_libm": "Apple libSystem (libm) on macOS 26.6.2",
+    "config_platform": "macosx-11.0-arm64"
+  },
+  "numpy_build": {
+    "blas_openblas_or_accelerate": "accelerate",
+    "blas_version": "unknown",
+    "compilers": {
+      "c": "15.0.0",
+      "cython": "3.2.9",
+      "c++": "15.0.0"
+    }
+  },
+  "floating_point": {
+    "round_to_nearest_even": true,
+    "subnormals_preserved": true,
+    "sum_not_reassociated": true,
+    "log2_widening_ulps": 4,
+    "log2_enclosure_failures": 0,
+    "log2_worst_relative_deviation": 1.0716679107951344e-16,
+    "log2_note": "sampled diagnostic on this libm; not a proof of the four-ulp contract for every argument reached in the exhaustive replay"
+  },
+  "threading_env": {
+    "OMP_NUM_THREADS": null,
+    "OPENBLAS_NUM_THREADS": null,
+    "MKL_NUM_THREADS": null,
+    "VECLIB_MAXIMUM_THREADS": null,
+    "NUMEXPR_NUM_THREADS": null,
+    "BDC_NP": null,
+    "BDC_M1F": null,
+    "BDC_BIAS": null
+  },
+  "cpu_count": 12,
+  "what_this_is": "The environment in which the short checks were run and passed on 2026-09-01. It is NOT the environment that produced the stored certificates; that environment was not recorded. See environment/README.md.",
+  "checks_passed_here": [
+    "upper certificate wrapper: ACCEPT",
+    "upper adversarial tests: PASS",
+    "lower certificate wrapper: ACCEPT",
+    "lower adversarial tests: PASS",
+    "lower generator reproduced every mathematical field of the shipped certificate"
+  ],
+  "checks_not_run_here": [
+    "the 2^30-state Bellman replay (upper/src/audit_rigor.py)",
+    "the Lean build (lake build Bdcproof.Cert)"
+  ]
+}
