@@ -108,6 +108,42 @@ def main() -> int:
     for phrase in LEAN_SCOPE_PHRASES:
         check(f"README states: {phrase}", phrase in readme)
 
+    print("\nrelease manifest")
+    mf = Path("RELEASE_MANIFEST.json")
+    if not mf.is_file():
+        check("RELEASE_MANIFEST.json exists", False)
+    else:
+        rm = json.loads(mf.read_text())
+        import hashlib
+        import subprocess
+        tracked = {p for p in subprocess.run(
+            ["git", "ls-files"], capture_output=True, text=True, check=True
+        ).stdout.split() if Path(p).is_file()} - {"RELEASE_MANIFEST.json"}
+        listed = set(rm["tracked_files"])
+        check("manifest covers every tracked file", tracked <= listed,
+              f"missing {sorted(tracked - listed)}" if tracked - listed else "")
+        check("manifest lists nothing untracked", listed <= tracked,
+              f"extra {sorted(listed - tracked)}" if listed - tracked else "")
+        stale = []
+        for name, want in rm["tracked_files"].items():
+            f = Path(name)
+            if not f.is_file():
+                stale.append(name); continue
+            h = hashlib.sha256()
+            with open(f, "rb") as fh:
+                for blk in iter(lambda: fh.read(1 << 22), b""):
+                    h.update(blk)
+            if h.hexdigest() != want:
+                stale.append(name)
+        check("every listed hash matches the file on disk", not stale,
+              f"stale: {stale}" if stale else "")
+        check("manifest quotes the upper endpoint",
+              rm["certificate_endpoints"]["upper"]["theorem_decimal"] == UPPER_DECIMAL)
+        check("manifest quotes the lower endpoint",
+              rm["certificate_endpoints"]["lower"]["theorem_decimal"] == LOWER_DECIMAL)
+        check("manifest records the log2 assumption",
+              any("LOG2_CONTRACT" in a for a in rm["standing_assumptions"]))
+
     print("\narithmetic and scope")
     for phrase in ARITHMETIC_PHRASES:
         check(f"README states: {phrase}", phrase in readme)

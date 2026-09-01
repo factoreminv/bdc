@@ -40,7 +40,12 @@ def main() -> None:
     ap.add_argument("-o", "--output", type=Path, default=Path("RELEASE_MANIFEST.json"))
     args = ap.parse_args()
 
-    tracked = sorted(p for p in git("ls-files").splitlines() if Path(p).is_file())
+    # The manifest cannot meaningfully contain its own hash, so it is excluded and
+    # `tools/check_consistency.py` instead checks that this list covers every other
+    # tracked file.  Run this generator *after* staging, since `git ls-files` reads
+    # the index.
+    tracked = sorted(p for p in git("ls-files").splitlines()
+                     if Path(p).is_file() and p != "RELEASE_MANIFEST.json")
     upper = json.loads(Path("upper/results/rigor_d0.65_L6_k6_m30_manifest.json").read_text())
     lower = json.loads(Path("lower/out/rigorous_lower_certificate.json").read_text())
 
@@ -90,6 +95,10 @@ def main() -> None:
             "The environment that produced the stored certificates was not recorded; "
             "see environment/README.md.",
         ],
+        "tracked_files_note": (
+            "Every tracked file except RELEASE_MANIFEST.json itself, which cannot "
+            "contain its own hash."
+        ),
         "tracked_files": {p: sha256(Path(p)) for p in tracked},
     }
     args.output.write_text(json.dumps(doc, indent=2) + "\n")
