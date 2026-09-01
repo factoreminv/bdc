@@ -1,0 +1,10 @@
+# Large data file distributed as a GitHub Release asset, not in the git tree.
+upper/results/bias_d0.65_L6_k6_m28.npy
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+
+# Lean
+lean/.lake/
