@@ -191,20 +191,4 @@ theorem extend_in_d (C : ℝ → ℝ) (d v : ℝ) (hd1 : d < 1)
   rw [le_div_iff₀ h1]
   nlinarith [key, hC, h2]
 
-/-! ### The headline, as a statement about the capacity function -/
-
-/-- The numbers actually certified.  `theta = 1.15665211` is the exhaustively checked
-Bellman maximum at `d = 1/2` (window `N = 22`, order `k = 4`), and `H_b(1/2) = 1`, so
-`C(1/2) ≤ 0.15665211`.  Combined with the cited monotonicity this gives the constant
-`0.31330422` for every `d ≥ 1/2`. -/
-theorem headline (C : ℝ → ℝ)
-    (hmono : ∀ e, (1:ℝ)/2 ≤ e → e < 1 → C e / (1 - e) ≤ C (1/2) / (1 - 1/2))
-    (hC : C (1/2) ≤ 0.15665211) :
-    ∀ e, (1:ℝ)/2 ≤ e → e < 1 → C e ≤ 0.31330422 * (1 - e) := by
-  intro e he he1
-  have h := extend_in_d C (1/2) 0.15665211 (by norm_num) hmono hC e he he1
-  have : (0.15665211 : ℝ) * (1 - e) / (1 - 1/2) = 0.31330422 * (1 - e) := by
-    norm_num; ring
-  linarith [h, this.le, this.ge]
-
 end BDC

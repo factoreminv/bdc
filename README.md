@@ -13,8 +13,8 @@ measure, and Bellman potential are not needed to check the results and are there
   bounds, and consistency tests;
 - `lean/`: the Lean 4 project containing the finite algebraic and order-theoretic lemmas.
 
-The upper calculation proves the coefficient `0.250984` at deletion probability `13/20`.
-The lower calculation proves the coefficient `0.12415` for the fixed Poisson-repeat input.
+The upper calculation checks the coefficient `0.250984` at deletion probability `13/20`.
+The lower calculation checks the coefficient `0.12415` for the fixed Poisson-repeat input.
 
 ## Python environment
 
@@ -50,7 +50,8 @@ shasum -a 256 upper/results/bias_d0.65_L6_k6_m28.npy
 ```
 
 The short check authenticates the three fixed inputs, verifies the Kraft inequalities at
-300-bit precision, and checks that the stored outward endpoint implies the theorem decimal:
+300-bit precision, and checks that the stored outward endpoint implies the theorem decimal.
+It does not repeat the `2^30`-state Bellman calculation:
 
 ```sh
 cd upper
@@ -71,6 +72,19 @@ python -m src.audit_rigor 13 20 6 6 30 results/q_d0.65_L6_k6_kraft.npz
 The final printed normalized upper endpoint must not exceed `0.250984`. The potential is an
 arbitrary bounded function in the Bellman inequality; its role is to sharpen the bound, not
 to add an assumption.
+
+The cutting-plane and value-iteration programs are search procedures: they produced the
+fixed code lengths and potential supplied here. The proof uses only the fixed Kraft and
+Bellman inequalities. It does not assume that either search converged or found an optimum.
+
+The Bellman replay uses NumPy binary64 interval endpoints. Elementary operations are widened
+as specified in `upper/src/ivl.py`, and reordered reductions receive a Higham error bound.
+The separate Kraft check uses 300-bit `mpmath`. Entropy logarithms in the Bellman pass use
+NumPy `log2` widened by four ulps. Accordingly, the result relies on an IEEE-754
+round-to-nearest environment without fast-math, unsafe reassociation, or flush-to-zero, and
+on a four-ulp error bound for the platform `log2`. The function `validate_log2` compares
+selected inputs against 200-bit `mpmath`; this is a diagnostic, not a proof of the library
+contract. The original manifest does not record a complete compiler and libm identity.
 
 ## Lower bound
 
@@ -98,9 +112,13 @@ lake exe cache get
 lake build Bdcproof.Cert
 ```
 
-The project contains no `sorry`. Lean checks the finite implications used to pass from the
-one-sided component bounds to the displayed constants. The analytic information-theoretic
-reductions are proved in the paper rather than encoded in Lean.
+The project contains no `sorry`. Lean proves the Bellman telescoping implication, a geometric
+tail inequality, an abstract upper-bound assembly lemma, the monotonicity-extension algebra
+conditional on the cited monotonicity result, preservation of lower bounds under retained
+nonnegative corrections, and the final lower-bound decimal arithmetic. It does not formalize
+the channel models, entropy identities, filter-state or segmentation reductions, numerical
+libraries, exhaustive enumeration, Arb computation, or stored data. Thus it is not an
+end-to-end formalization of either capacity bound.
 
 ## Expected results
 
@@ -115,4 +133,3 @@ The long upper calculation need not reproduce elapsed time or intermediate reduc
 It must return an outward endpoint no larger than the theorem decimal. The lower calculation
 may print slightly different midpoint formatting across compatible FLINT versions, but its
 one-sided inequalities must imply the same decimal bound.
-
