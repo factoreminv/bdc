@@ -81,6 +81,13 @@ jobs:
           echo "964ee2dd5df9209a2a455e41f2691c7ae163eec16e6fe6343dc59470e375c0bc  upper/results/bias_d0.65_L6_k6_m28.npy" \
             | sha256sum -c -
 
+      # The wrapper does not import the replay modules, so a missing module in the
+      # replay import closure would leave every other Python step green while the
+      # documented 2^30-state command failed at import in any fresh clone.  Import it.
+      - name: Upper bound - the documented replay command must import
+        working-directory: upper
+        run: python -c "import src.audit_rigor; print('replay import closure OK')"
+
       # This is the wrapper only.  It authenticates the inputs, rechecks Kraft at 300
       # bits, and checks the stored endpoint.  It does NOT repeat the 2^30-state Bellman
       # calculation, which is far outside an ordinary runner's budget.
