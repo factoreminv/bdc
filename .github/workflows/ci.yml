@@ -36,6 +36,11 @@ jobs:
         with:
           python-version: '3.12'
 
+      # No dependencies and instant: fails if the README, the manifests, the Lean
+      # decimals, and the paper's two constants have drifted apart.
+      - name: Consistency of README, manifests, Lean, and the constants
+        run: python tools/check_consistency.py
+
       - name: Install the declared dependencies
         run: |
           python -m pip install --upgrade pip

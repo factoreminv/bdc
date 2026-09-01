@@ -151,15 +151,15 @@ With Lean and Lake installed:
 (cd lean && lake exe cache get && lake build Bdcproof.Cert && lake build)
 ```
 
-The project contains no `sorry`, and continuous integration enforces it: the Lean job
-audits every `BDC` declaration and fails if any reaches an axiom outside
-`propext`, `Classical.choice`, `Quot.sound`. Lean proves the Bellman telescoping implication, a geometric
-tail inequality, an abstract upper-bound assembly lemma, the monotonicity-extension algebra
-conditional on the cited monotonicity result, preservation of lower bounds under retained
-nonnegative corrections, and the final lower-bound decimal arithmetic. It does not formalize
-the channel models, entropy identities, filter-state or segmentation reductions, numerical
-libraries, exhaustive enumeration, Arb computation, or stored data. Thus it is not an
-end-to-end formalization of either capacity bound.
+The project contains no `sorry`, and continuous integration enforces it: the Lean job audits
+every `BDC` declaration and fails if any reaches an axiom outside `propext`,
+`Classical.choice`, `Quot.sound`. Lean proves the Bellman telescoping implication, a
+geometric tail inequality, an abstract upper-bound assembly lemma, the
+monotonicity-extension algebra conditional on the cited monotonicity result, preservation of
+lower bounds under retained nonnegative corrections, and the final lower-bound decimal
+arithmetic. It does not formalize the channel models, entropy identities, filter-state or
+segmentation reductions, numerical libraries, exhaustive enumeration, Arb computation, or
+stored data. Thus it is not an end-to-end formalization of either capacity bound.
 
 ## Authenticating the whole supplement
 
@@ -169,6 +169,13 @@ assumptions. Regenerate it after any change:
 
 ```sh
 python tools/release_manifest.py -o RELEASE_MANIFEST.json
+```
+
+A second script cross-checks that this file, the two certificates, the Lean decimals, and
+the constants quoted here still agree; continuous integration runs it on every push:
+
+```sh
+python tools/check_consistency.py
 ```
 
 ## Expected results

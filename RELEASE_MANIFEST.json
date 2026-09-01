@@ -1,8 +1,8 @@
 {
-  "generated_utc": "2026-09-01T17:20:18.351110+00:00",
+  "generated_utc": "2026-09-01T17:21:53.894956+00:00",
   "what_this_is": "SHA-256 of every tracked file, the release asset, and the certificate endpoints, so a reader can authenticate the supplement as a whole.",
-  "source_commit": "77a5e42361a1c5586488f590e7f7afc370b7fe3a",
-  "source_commit_subject": "Add a release manifest covering every tracked file and the release asset",
+  "source_commit": "5212a75530f7891a8e24fd14fac21cac951188dc",
+  "source_commit_subject": "Make the no-sorry claim machine-enforced in CI",
   "source_commit_note": "The commit whose tree was hashed.  The commit carrying this file is its child; tracked_files is what pins the content.",
   "release_asset": {
     "name": "bias_d0.65_L6_k6_m28.npy",
@@ -36,10 +36,10 @@
     "The environment that produced the stored certificates was not recorded; see environment/README.md."
   ],
   "tracked_files": {
-    ".github/workflows/ci.yml": "8792277ed8206b615f5f39e0caf49549fe276b836bef151003db338135d990a9",
+    ".github/workflows/ci.yml": "1ae2eb09bc804149b93e729d31898d40f9595b975e9842f22353fc948766861e",
     ".gitignore": "d5c99110e4575a038ac49b8ad309e397daec3fca4f1d8fce35c3bf83c7a3797e",
-    "README.md": "ec5b9fe722c4020729e784d93f7a42ea14403012989096767356106df4969e72",
-    "RELEASE_MANIFEST.json": "468601b5795f5d4d18d23b65ce1cbfc252cee4b55184a322817c6792d04ff372",
+    "README.md": "76d1a82c0121d8945654b34b9af93271c20aa0995b1821d443f2cb2cb3ecfa0e",
+    "RELEASE_MANIFEST.json": "ec8f04a6cbe1a12802549dfbfc1baaecaedf5211ce77c028795f4a86e8ea99ae",
     "environment/README.md": "a6d2f8e1928985b1b94de087fd5b56e1df729d37a166b1aae96c178a6143c4b6",
     "environment/requirements-tested-2026-09-01.txt": "2521edaef7057fc944ff7556407218f6a4172ab3e62082c74f5c392c4f47e586",
     "environment/verified-2026-09-01.json": "4d4a3a28434de90fa1b3ee9bd9324e3d2d77e4a67d7b1ad9360f8561cb930737",
