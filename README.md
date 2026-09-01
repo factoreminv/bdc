@@ -178,6 +178,12 @@ the constants quoted here still agree; continuous integration runs it on every p
 python tools/check_consistency.py
 ```
 
+## Licence and citation
+
+The contents are released under the MIT licence (`LICENSE`). `CITATION.cff` records the
+paper title, author, repository URL, and version; it deliberately carries no DOI, arXiv
+identifier, or publication status, because none is settled.
+
 ## Expected results
 
 ```text

@@ -1,0 +1,20 @@
+cff-version: 1.2.0
+message: >-
+  If you use this supplementary material, please cite the paper it accompanies.
+title: New Bounds on the Binary Deletion Channel Capacity
+abstract: >-
+  Supplementary material for the paper: the fixed certificate objects, the interval
+  and Arb verification programs, and the Lean 4 statements of the finite lemmas used
+  to assemble the two bounds 0.12415 <= kappa <= 0.250984.
+type: software
+authors:
+  - family-names: Soysal
+    given-names: Özgür
+    affiliation: Stanford University
+    email: soysal@stanford.edu
+repository-code: https://github.com/factoreminv/bdc
+license: MIT
+version: "1.0"
+# No DOI, arXiv identifier, or publication status is recorded here: none is known at
+# the time of writing, and inventing one would misrepresent the work's status.  Add
+# `doi:` and `preferred-citation:` once they exist.

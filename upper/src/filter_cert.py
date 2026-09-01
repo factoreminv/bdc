@@ -11,9 +11,8 @@ Verification Principle in the paper and the corresponding note in the top-level
 
 `smat` below is reproduced character-for-character from `src/filter_cert.py` in the
 author's development tree.  It is a pure function of `(M, c, d)` with no state, no
-search, and no dependence on anything else in that tree.  That this is the revision
-which produced the archived run is for the author to confirm; a full replay that
-reproduces the recorded endpoint would corroborate it.
+search, and no dependence on anything else in that tree.  The author has confirmed that
+this is the revision which produced the archived run.
 """
 import numpy as np
 
