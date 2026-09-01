@@ -26,9 +26,39 @@ def sha256(path: Path) -> str:
     return h.hexdigest()
 
 
+RELEASE_ASSETS = {
+    "bias_d0.65_L6_k6_m28.npy": (
+        "This 1 GiB Bellman potential exceeds the GitHub limit on repository content "
+        "and ships as an asset of the v1.0 release.  From the repository root:\n"
+        "    gh release download v1.0 -R factoreminv/bdc \\\n"
+        "      -p bias_d0.65_L6_k6_m28.npy -D upper/results/"
+    ),
+}
+
+
+def require_inputs(root: Path, names) -> None:
+    """Report every absent input at once, with retrieval instructions where they apply.
+
+    A fresh clone does not contain the release asset, so this is the first thing a
+    reader hits; an unadorned FileNotFoundError from the hashing loop does not say
+    which file is meant or where to obtain it.
+    """
+    missing = [name for name in names if not (root / name).is_file()]
+    if not missing:
+        return
+    lines = ["missing certificate input(s) under %s:" % root]
+    for name in missing:
+        lines.append("  - %s" % name)
+        hint = RELEASE_ASSETS.get(name)
+        if hint:
+            lines.append("    " + hint.replace("\n", "\n    "))
+    raise FileNotFoundError("\n".join(lines))
+
+
 def verify(manifest_path: Path) -> None:
     manifest = json.loads(manifest_path.read_text())
     root = manifest_path.parent
+    require_inputs(root, manifest["files"])
     for name, expected in manifest["files"].items():
         actual = sha256(root / name)
         if actual != expected:
@@ -56,5 +86,10 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("manifest", type=Path)
     args = parser.parse_args()
-    verify(args.manifest)
+    # verify() keeps raising, so the adversarial tests still see the exception; the
+    # command line reports the absent input as a message rather than a traceback.
+    try:
+        verify(args.manifest)
+    except FileNotFoundError as exc:
+        raise SystemExit("upper certificate wrapper: MISSING INPUT\n%s" % exc)
     print("upper certificate wrapper: ACCEPT")
