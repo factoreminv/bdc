@@ -19,7 +19,7 @@ The lower calculation proves the coefficient `0.12415` for the fixed Poisson-rep
 ## Python environment
 
 Python 3.11 or later is recommended. From the archive root, create an isolated environment
-and install the three listed packages:
+and install the listed packages:
 
 ```sh
 python3 -m venv .venv
@@ -28,6 +28,26 @@ python -m pip install -r requirements.txt
 ```
 
 ## Upper bound
+
+The Bellman potential `bias_d0.65_L6_k6_m28.npy` is 1.0 GiB, which exceeds the GitHub limit
+on repository content, so it is attached to the `v1.0` release instead of being committed.
+Both commands below need it in place:
+
+```sh
+gh release download v1.0 -R factoreminv/bdc \
+  -p bias_d0.65_L6_k6_m28.npy -D upper/results/
+```
+
+Its SHA-256 is recorded in the manifest and checked by the wrapper below; to check it by
+hand:
+
+```sh
+shasum -a 256 upper/results/bias_d0.65_L6_k6_m28.npy
+```
+
+```text
+964ee2dd5df9209a2a455e41f2691c7ae163eec16e6fe6343dc59470e375c0bc
+```
 
 The short check authenticates the three fixed inputs, verifies the Kraft inequalities at
 300-bit precision, and checks that the stored outward endpoint implies the theorem decimal:
