@@ -16,9 +16,15 @@ measure, and Bellman potential are not needed to check the results and are there
 The upper calculation checks the coefficient `0.250984` at deletion probability `13/20`.
 The lower calculation checks the coefficient `0.12415` for the fixed Poisson-repeat input.
 
+## Running the commands
+
+Every command below is written to be run **from the repository root**. Blocks that need a
+different working directory run in a subshell, so pasting the blocks in order leaves you at
+the root throughout.
+
 ## Python environment
 
-Python 3.11 or later is recommended. From the archive root, create an isolated environment
+Python 3.11 or later is recommended. From the repository root, create an isolated environment
 and install the listed packages:
 
 ```sh
@@ -26,6 +32,12 @@ python3 -m venv .venv
 . .venv/bin/activate
 python -m pip install -r requirements.txt
 ```
+
+`requirements.txt` gives lower bounds only. `environment/requirements-tested-2026-09-01.txt`
+pins the exact versions of an environment in which the short checks have been run and passed,
+and `environment/README.md` explains what that record is — and, importantly, what it is not:
+the environment that originally produced the stored certificates was not recorded and has not
+been reconstructed.
 
 ## Upper bound
 
@@ -54,24 +66,50 @@ The short check authenticates the three fixed inputs, verifies the Kraft inequal
 It does not repeat the `2^30`-state Bellman calculation:
 
 ```sh
-cd upper
-python -m src.verify_rigor_certificate results/rigor_d0.65_L6_k6_m30_manifest.json
-python -m src.test_rigor_certificate
+(cd upper && python -m src.verify_rigor_certificate results/rigor_d0.65_L6_k6_m30_manifest.json)
+(cd upper && python -m src.test_rigor_certificate)
 ```
+
+If the release asset is absent the wrapper stops with `upper certificate wrapper: MISSING
+INPUT`, names the file, and repeats the download command, rather than raising a bare
+`FileNotFoundError`.
 
 The complete Bellman calculation evaluates both actions at all `2^30` states. It is
 computationally substantial and uses approximately the elapsed time reported in the manifest
 on the original machine:
 
 ```sh
-BDC_NP=12 BDC_M1F=14 \
-BDC_BIAS=results/bias_d0.65_L6_k6_m28.npy \
-python -m src.audit_rigor 13 20 6 6 30 results/q_d0.65_L6_k6_kraft.npz
+(cd upper && BDC_NP=12 BDC_M1F=14 \
+  BDC_BIAS=results/bias_d0.65_L6_k6_m28.npy \
+  python -m src.audit_rigor 13 20 6 6 30 results/q_d0.65_L6_k6_kraft.npz)
 ```
 
 The final printed normalized upper endpoint must not exceed `0.250984`. The potential is an
 arbitrary bounded function in the Bellman inequality; its role is to sharpen the bound, not
 to add an assumption.
+
+### What the full replay needs
+
+| resource | value | basis |
+| --- | --- | --- |
+| disk | 1.0 GiB for the release asset, plus ~0.5 MiB of repository content | measured |
+| peak RAM | ~6 GiB: a 2 GiB shared `float64` lift of the potential, a ~4 GiB transient while it is built, and ~12 worker working sets | estimate from the allocation sizes in `src/audit_rigor.py`; not measured at `m = 30` |
+| processes | 12 (`BDC_NP=12`), one per core | the archived command |
+| wall time | 7,996 s for the interval pass | `interval_elapsed_seconds` in the manifest, on the original machine |
+
+Set `BDC_NP` to the core count you have; fewer cores raise the wall time roughly in
+proportion and lower the worker memory. `BDC_M1F` sets the leaf-batch size (`2^BDC_M1F`
+states per unit of work) and trades memory against scheduling overhead.
+
+Record the environment before starting, and keep it with the result:
+
+```sh
+python tools/print_environment.py -o environment/replay-$(date +%Y-%m-%d).json
+```
+
+Elapsed time and the order in which reductions are performed may differ from the archived
+run; neither is part of the claim. What must hold is the one-sided conclusion: the final
+normalized endpoint must be no larger than `0.250984`.
 
 The cutting-plane and value-iteration programs are search procedures: they produced the
 fixed code lengths and potential supplied here. The proof uses only the fixed Kraft and
@@ -85,6 +123,10 @@ round-to-nearest environment without fast-math, unsafe reassociation, or flush-t
 on a four-ulp error bound for the platform `log2`. The function `validate_log2` compares
 selected inputs against 200-bit `mpmath`; this is a diagnostic, not a proof of the library
 contract. The original manifest does not record a complete compiler and libm identity.
+`upper/LOG2_CONTRACT.md` states this assumption precisely, records how many logarithms a full
+replay evaluates, and reports measured throughput for the correctly-rounded replacements that
+would remove it. No replacement has been integrated, so the four-ulp contract remains an
+open assumption of the converse.
 
 ## Lower bound
 
@@ -92,10 +134,9 @@ The following command recomputes the entropy and segmentation terms with 192-bit
 and exact integer-polynomial convolutions:
 
 ```sh
-cd lower
-python run_rigorous_final.py
-python verify_rigorous_certificate.py out/rigorous_lower_certificate.json
-python test_rigorous_certificate.py
+(cd lower && python run_rigorous_final.py)
+(cd lower && python verify_rigorous_certificate.py out/rigorous_lower_certificate.json)
+(cd lower && python test_rigorous_certificate.py)
 ```
 
 The generator overwrites `out/rigorous_lower_certificate.json`. Its final lower endpoint must
@@ -107,9 +148,7 @@ are bounded from above, so every rounding and truncation weakens the claimed low
 With Lean and Lake installed:
 
 ```sh
-cd lean
-lake exe cache get
-lake build Bdcproof.Cert
+(cd lean && lake exe cache get && lake build Bdcproof.Cert && lake build)
 ```
 
 The project contains no `sorry`. Lean proves the Bellman telescoping implication, a geometric
