@@ -159,6 +159,16 @@ the channel models, entropy identities, filter-state or segmentation reductions,
 libraries, exhaustive enumeration, Arb computation, or stored data. Thus it is not an
 end-to-end formalization of either capacity bound.
 
+## Authenticating the whole supplement
+
+`RELEASE_MANIFEST.json` records the SHA-256 of every tracked file, of the release asset,
+and of the environment records, together with the stored endpoints and the standing
+assumptions. Regenerate it after any change:
+
+```sh
+python tools/release_manifest.py -o RELEASE_MANIFEST.json
+```
+
 ## Expected results
 
 ```text
