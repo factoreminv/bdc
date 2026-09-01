@@ -1,8 +1,8 @@
 {
-  "generated_utc": "2026-09-01T17:28:06.809151+00:00",
+  "generated_utc": "2026-09-01T23:26:42.399769+00:00",
   "what_this_is": "SHA-256 of every tracked file, the release asset, and the certificate endpoints, so a reader can authenticate the supplement as a whole.",
-  "source_commit": "f78e4dd57718748edd7e8ec568813a8d432325f2",
-  "source_commit_subject": "Make the release manifest self-checking",
+  "source_commit": "8f90de56e3bf5a75d9caee5d50086e6a5bb342ca",
+  "source_commit_subject": "Add the MIT licence and a citation record",
   "source_commit_note": "The commit whose tree was hashed.  The commit carrying this file is its child; tracked_files is what pins the content.",
   "release_asset": {
     "name": "bias_d0.65_L6_k6_m28.npy",
@@ -27,6 +27,7 @@
   },
   "environment_records": [
     "environment/README.md",
+    "environment/replay-2026-09-01.json",
     "environment/requirements-tested-2026-09-01.txt",
     "environment/verified-2026-09-01.json"
   ],
@@ -41,8 +42,9 @@
     ".gitignore": "d5c99110e4575a038ac49b8ad309e397daec3fca4f1d8fce35c3bf83c7a3797e",
     "CITATION.cff": "da91250cd716337986d75705fc15ad7bb5aa154d4ccee581b3f7e2341cd5a38f",
     "LICENSE": "0690c7e5a7f526be2354b22d4b9e2434e3afdf2d436f3838bd60cdfcfea13519",
-    "README.md": "edd5ec0b52812aed33aaf2046eb2927e21011b5529066013a793b19eecd00a3d",
-    "environment/README.md": "a6d2f8e1928985b1b94de087fd5b56e1df729d37a166b1aae96c178a6143c4b6",
+    "README.md": "78eb4e7e63ce2cfb7f07f4805f9a08d262ced30320860a24945868ce26367a60",
+    "environment/README.md": "fc64e6c31f549ea61800859ef812da4b9e8e7d61f0373f5b38357ca6e6d6373f",
+    "environment/replay-2026-09-01.json": "797a4178c7d662cd8b79504163da8ac2c3157e727f633d9ccec9464ab5ff7485",
     "environment/requirements-tested-2026-09-01.txt": "2521edaef7057fc944ff7556407218f6a4172ab3e62082c74f5c392c4f47e586",
     "environment/verified-2026-09-01.json": "4d4a3a28434de90fa1b3ee9bd9324e3d2d77e4a67d7b1ad9360f8561cb930737",
     "lean/Bdcproof.lean": "a12237ee9aed22162c6da5a840f77ea22607aeeb7b5823d342b518692049792b",

@@ -29,6 +29,19 @@ substantially newer than any that could have produced it. Only `elapsed_seconds`
 That is evidence of the lower calculation's portability; it is not a statement about the
 upper Bellman pass, which was not rerun.
 
+## The full replay has been reproduced once
+
+`replay-2026-09-01.json` records a complete rerun of the `2^30`-state Bellman pass on the
+machine described in that file, together with its result. The regenerated
+`upper/results/rigor_d0.65_L6_k6_m30.npz` came out **byte-identical** to the archived one
+(SHA-256 `9baef9f6...d93465`), so the exhaustive interval maximum reproduced exactly on
+different hardware and a newer NumPy than could have produced it. Wall time differed by a
+factor of 2.4 (19,502 s against the recorded 7,996 s); the claim does not depend on it.
+
+This is evidence that the upper calculation is portable. It is not evidence about the
+original environment, which remains unrecorded, and it does not discharge the platform
+`log2` assumption: the replay ran on a libm satisfying the same unproved contract.
+
 ## Recording the environment of a future replay
 
 Run this immediately before a long calculation and keep the output beside the result:

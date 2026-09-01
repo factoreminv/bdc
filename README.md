@@ -93,9 +93,14 @@ to add an assumption.
 | resource | value | basis |
 | --- | --- | --- |
 | disk | 1.0 GiB for the release asset, plus ~0.5 MiB of repository content | measured |
-| peak RAM | ~6 GiB: a 2 GiB shared `float64` lift of the potential, a ~4 GiB transient while it is built, and ~12 worker working sets | estimate from the allocation sizes in `src/audit_rigor.py`; not measured at `m = 30` |
+| peak RAM | 6.07 GiB peak memory footprint; 4.30 GiB largest single process | **measured** on the verification machine (`/usr/bin/time -l`, 2026-09-01) |
 | processes | 12 (`BDC_NP=12`), one per core | the archived command |
-| wall time | 7,996 s for the interval pass | `interval_elapsed_seconds` in the manifest, on the original machine |
+| wall time | 7,996 s on the original machine; **19,502 s measured** on a 12-core Apple M-series | manifest `interval_elapsed_seconds`; measured replay 2026-09-01 |
+| CPU time | 71,435 s user + 76,227 s system | measured; the large system share is page traffic against the 2 GiB shared potential, so the run is memory-bound and does not saturate 12 cores |
+
+Budget for wall time well above the manifest figure: the identity of the machine that
+produced the archived 7,996 s was never recorded, and a 12-core Apple M-series took
+**2.4x longer**. Elapsed time is not part of the claim.
 
 Set `BDC_NP` to the core count you have; fewer cores raise the wall time roughly in
 proportion and lower the worker memory. `BDC_M1F` sets the leaf-batch size (`2^BDC_M1F`

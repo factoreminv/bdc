@@ -1,0 +1,73 @@
+{
+  "recorded_utc": "2026-09-01T17:27:36+00:00",
+  "record_kind": "observed-on-a-verification-machine-2026-09-01-full-replay",
+  "python": {
+    "version": "3.12.9",
+    "implementation": "CPython",
+    "compiler": "Clang 18.1.8 ",
+    "executable": ".venv/bin/python (path elided)"
+  },
+  "packages": {
+    "numpy": "2.5.2",
+    "scipy": "1.18.1",
+    "mpmath": "1.4.1",
+    "python_flint": "0.9.0"
+  },
+  "platform": {
+    "system": "Darwin",
+    "release": "25.6.0",
+    "platform": "macOS-26.6.2-arm64-arm-64bit",
+    "machine": "arm64",
+    "processor": "arm",
+    "libc_libm": "Apple libSystem (libm) on macOS 26.6.2",
+    "config_platform": "macosx-11.0-arm64"
+  },
+  "numpy_build": {
+    "blas_openblas_or_accelerate": "accelerate",
+    "blas_version": "unknown",
+    "compilers": {
+      "c": "15.0.0",
+      "cython": "3.2.9",
+      "c++": "15.0.0"
+    }
+  },
+  "floating_point": {
+    "round_to_nearest_even": true,
+    "subnormals_preserved": true,
+    "sum_not_reassociated": true,
+    "log2_widening_ulps": 4,
+    "log2_enclosure_failures": 0,
+    "log2_worst_relative_deviation": 1.0716679107951344e-16,
+    "log2_note": "sampled diagnostic on this libm; not a proof of the four-ulp contract for every argument reached in the exhaustive replay"
+  },
+  "threading_env": {
+    "OMP_NUM_THREADS": null,
+    "OPENBLAS_NUM_THREADS": null,
+    "MKL_NUM_THREADS": null,
+    "VECLIB_MAXIMUM_THREADS": null,
+    "NUMEXPR_NUM_THREADS": null,
+    "BDC_NP": "12",
+    "BDC_M1F": "14",
+    "BDC_BIAS": "results/bias_d0.65_L6_k6_m28.npy"
+  },
+  "cpu_count": 12,
+  "what_this_is": "The environment of the full 2^30-state Bellman replay run on 2026-09-01, recorded immediately before it started.  It is NOT the environment that produced the stored certificates; that environment was never recorded.  See environment/README.md.",
+  "replay_result": {
+    "command": "BDC_NP=12 BDC_M1F=14 BDC_BIAS=results/bias_d0.65_L6_k6_m28.npy python -m src.audit_rigor 13 20 6 6 30 results/q_d0.65_L6_k6_kraft.npz",
+    "started_utc": "2026-09-01T18:00:23Z",
+    "ended_utc": "2026-09-01T23:25:25Z",
+    "exit_code": 0,
+    "wall_seconds": 19501.55,
+    "wall_seconds_archived_for_comparison": 7996,
+    "cpu_user_seconds": 71435.42,
+    "cpu_sys_seconds": 76226.99,
+    "max_rss_bytes": 4620943360,
+    "peak_memory_footprint_bytes": 6519444712,
+    "theta_hi_over_one_minus_d": 0.25098375532964956,
+    "theorem_decimal": "0.250984",
+    "endpoint_within_decimal": true,
+    "result_archive_sha256": "9baef9f6ca6a5633219969b86c0033ed5a22e9732767e886c2a488eab2d93465",
+    "reproduced_archived_result_bit_for_bit": true,
+    "note": "The regenerated rigor_d0.65_L6_k6_m30.npz is byte-identical to the archived one, so the exhaustive maximum reproduced exactly on different hardware and a newer NumPy.  Elapsed time differed by a factor of 2.4, which the claim does not depend on."
+  }
+}
