@@ -1,8 +1,8 @@
 {
-  "generated_utc": "2026-09-02T11:09:22.227273+00:00",
+  "generated_utc": "2026-09-02T15:08:28.921771+00:00",
   "what_this_is": "SHA-256 of every tracked file, the release asset, and the certificate endpoints, so a reader can authenticate the supplement as a whole.",
-  "source_commit": "c1aa46a4afed1c1868fc605e6fb1bd95388e9915",
-  "source_commit_subject": "Point axiom-audit at the module root, not the namespace",
+  "source_commit": "6bbf7bb05cc0b6b84acfc41c5bcd7d288b6e47ed",
+  "source_commit_subject": "Replace the platform log2 by a self-contained rational enclosure",
   "source_commit_note": "The commit whose tree was hashed.  The commit carrying this file is its child; tracked_files is what pins the content.",
   "release_asset": {
     "name": "bias_d0.65_L6_k6_m28.npy",
@@ -70,7 +70,7 @@
     "upper/results/rigor_d0.65_L6_k6_m30_manifest.json": "1dc86446f83a6259050fbd589a3c3a789da6385f7f24bf0f62cbe1e501613ddd",
     "upper/src/__init__.py": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
     "upper/src/audit_inline.py": "a7631905c500bf4316eb81cff6fdbd7002d55b3eb1636901b5610860cd637c27",
-    "upper/src/audit_rigor.py": "d860b125870ba66d168932c4cf957720375621d4d8de2d84cb96a2114f3e1381",
+    "upper/src/audit_rigor.py": "0a1b52260628f869b925383867b06e93027c730a8b89dce3446905ed321d5e7e",
     "upper/src/filter_cert.py": "241b255de4758a00fe48340bb4f5069da76e03e126814a6fc7a8cc6a00555d39",
     "upper/src/filter_par.py": "3c9ddfe228e622fd6cbf45ea66f78a40158bd17dfcf59750cdaacd17e7f6abe2",
     "upper/src/filter_win2.py": "96918940984eea1d2ce7b6dbbf3084749b392db805396e3c959ffb48e0d92350",

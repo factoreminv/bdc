@@ -124,6 +124,5 @@ if __name__ == '__main__':
     print(f'  INTERVAL EXHAUSTIVE over all 2^{m} states: theta_hi/(1-d) = {th:.9f}  '
           f'[{time.time()-t1:.0f}s]', flush=True)
     print(f'  ==> C(d) <= {th:.6f} (1-d) for all d >= {d_frac};  at d={d}: C <= {th*(1-d):.6f}')
-    print(f'  atlas narrowing (LB 0.123564): {(0.3578-th+0.001464)/0.2357*100:.2f}%')
     np.savez(f'results/rigor_d{d}_L{L}_k{k}_m{m}.npz', theta_hi=th, d=d, L=L, k=k, m=m,
              pi_up=iv.pi_up, w=w)
