@@ -1,8 +1,8 @@
 {
-  "generated_utc": "2026-09-02T15:08:28.921771+00:00",
+  "generated_utc": "2026-09-02T15:27:06.030439+00:00",
   "what_this_is": "SHA-256 of every tracked file, the release asset, and the certificate endpoints, so a reader can authenticate the supplement as a whole.",
-  "source_commit": "6bbf7bb05cc0b6b84acfc41c5bcd7d288b6e47ed",
-  "source_commit_subject": "Replace the platform log2 by a self-contained rational enclosure",
+  "source_commit": "57224625d5cb0c79cb4647f729a9734c44032503",
+  "source_commit_subject": "Drop the stale atlas-narrowing line from the certified replay",
   "source_commit_note": "The commit whose tree was hashed.  The commit carrying this file is its child; tracked_files is what pins the content.",
   "release_asset": {
     "name": "bias_d0.65_L6_k6_m28.npy",
@@ -62,7 +62,7 @@
     "lower/verify_rigorous_certificate.py": "d0856deeb949ead1f7fe0adbc303a3758aac75e2434b3203a0e70bfa980953e8",
     "requirements.txt": "3f93bf30264791f14e8ba7f1a385570ee221ea7b1b2dd6927035c7c2396487ba",
     "tools/check_consistency.py": "ac5c6599791447153797e521b3936c59d6c1c025c06190a39eb2ab9127fbc915",
-    "tools/print_environment.py": "41c5bd5048bd8aa9a839079645f56b3557fe73eeb27324986e4708fc4040b425",
+    "tools/print_environment.py": "ad9b125ed23e530739ddaf21417757f85722f1c2d4e7aebd3963e2e70d1c8e90",
     "tools/release_manifest.py": "51842d4f68c11a1e930a8d074784ac57132e0ae60ecb8f36600067bdf5ed7e17",
     "upper/LOG2_CONTRACT.md": "0380194aacb01a58edc3d38f047b5341525932cc0b4250c34ef1846d707d0185",
     "upper/results/q_d0.65_L6_k6_kraft.npz": "beda6c275d184e6c13b215ce0a45a7582ecb0d8c9ec38f3c66f3cd96c638669b",

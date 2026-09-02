@@ -23,6 +23,22 @@ import platform
 import sys
 import sysconfig
 from datetime import datetime, timezone
+from pathlib import PurePath
+
+
+def _elided_executable() -> str:
+    """The interpreter path with its leading directories dropped.
+
+    Records produced here are committed to a public repository, and `sys.executable` is
+    normally an absolute path under the operator's home directory: publishing it verbatim
+    would disclose an account name alongside a pseudonymous commit identity.  Only the
+    last three components are kept, which still distinguishes a virtualenv interpreter
+    from a system one and matches the elision already used by the committed records.  The
+    elision happens here rather than by hand afterwards, so no future record can carry the
+    path by omission.
+    """
+    tail = [part for part in PurePath(sys.executable).parts[-3:] if part not in ("/", "\\")]
+    return f"{'/'.join(tail)} (path elided)"
 
 
 def _version(mod: str) -> str | None:
@@ -115,7 +131,7 @@ def collect() -> dict:
             "version": platform.python_version(),
             "implementation": platform.python_implementation(),
             "compiler": platform.python_compiler(),
-            "executable": sys.executable,
+            "executable": _elided_executable(),
         },
         "packages": {
             "numpy": _version("numpy"),
