@@ -10,14 +10,15 @@ Rounding policy
   hook them.  We use the standard a-priori bound instead: for n terms in any order the
   computed sum s^ obeys  |s^ - s| <= gamma_n * sum|x_i|  with gamma_n = n*u/(1 - n*u),
   u = 2^-53.  We widen by that, computed from a separate sum of |x|.
-* log2 : the ONE place where a library function is trusted.  numpy/glibc log2 is documented
-  faithful (<= 1 ulp); we widen by LOG2_ULP = 4 ulps.  `validate_log2` spot-checks this
-  against mpmath at 200 bits on adversarial inputs.
+* log2 : no libm transcendental is used.  IEEE ``frexp`` gives exact power-of-two range
+  reduction.  A 16384-entry table is generated at import time from exact rational bounds for
+  the atanh series, and a one-term residual series has an explicit positive remainder.
+  Every runtime arithmetic operation is widened outward below.
 """
 import numpy as np
+from fractions import Fraction
 
 U = 2.0 ** -53
-LOG2_ULP = 4
 
 
 # Widening.  np.nextafter is the TIGHTEST one-ulp widening but it dominated the profile
@@ -107,15 +108,104 @@ def dot_iv(a, b, n):
     return (_dn(lo - g * mag), _up(hi + g * mag))
 
 
+def _frac_outward(q):
+    """Convert an exact Fraction to enclosing binary64 endpoints by exact comparison."""
+    x = np.float64(float(q))
+    lo = hi = x
+    while Fraction.from_float(float(lo)) > q:
+        lo = np.nextafter(lo, -np.inf)
+    while Fraction.from_float(float(hi)) < q:
+        hi = np.nextafter(hi, np.inf)
+    return lo, hi
+
+
+def _ln_rational_bounds(x, n=30):
+    """Exact rational bounds for ln(x), 1 <= x <= 2, from the atanh series."""
+    z = (x - 1) / (x + 1)
+    z2 = z * z
+    term = z
+    s = Fraction(0)
+    for k in range(n + 1):
+        s += 2 * term / (2 * k + 1)
+        term *= z2
+    # Remaining denominators are at least 2n+3; sum the geometric majorant exactly.
+    rem = 2 * term / ((2 * n + 3) * (1 - z2)) if z else Fraction(0)
+    return s, s + rem
+
+
+# Exact-rational construction of bounds for 1/ln(2) and a fine dyadic log table.
+_LN2_LO_Q, _LN2_HI_Q = _ln_rational_bounds(Fraction(2))
+_INV_LN2_Q = (Fraction(1, 1) / _LN2_HI_Q, Fraction(1, 1) / _LN2_LO_Q)
+INV_LN2_LO = _frac_outward(_INV_LN2_Q[0])[0]
+INV_LN2_HI = _frac_outward(_INV_LN2_Q[1])[1]
+_TABLE_BITS = 14
+_TABLE_N = 1 << _TABLE_BITS
+_LOGC_LO = np.empty(_TABLE_N, dtype=np.float64)
+_LOGC_HI = np.empty(_TABLE_N, dtype=np.float64)
+for _j in range(_TABLE_N):
+    _c = Fraction(_TABLE_N + _j, _TABLE_N)
+    _lc_lo, _lc_hi = _ln_rational_bounds(_c)
+    _q_lo = _lc_lo / _LN2_HI_Q
+    _q_hi = _lc_hi / _LN2_LO_Q
+    _LOGC_LO[_j] = _frac_outward(_q_lo)[0]
+    _LOGC_HI[_j] = _frac_outward(_q_hi)[1]
+
+# For c=1+floor(N(m-1))/N and 1<=m<2, z=(m-c)/(m+c) lies in
+# [0,1/(2N)].  One retained term is 2z; the omitted positive tail starts at z^3/3.
+_ZMAX_Q = Fraction(1, 2 * _TABLE_N)
+_RESID_REM_HI = _frac_outward(
+    2 * _ZMAX_Q ** 3 / (3 * (1 - _ZMAX_Q ** 2))
+)[1]
+_RESID_COEFF = (_frac_outward(Fraction(2)),)
+
+
+def _log2_point(x):
+    """Outward log2 enclosure for positive binary64 values, without libm log."""
+    x = np.asarray(x, dtype=np.float64)
+    m, e = np.frexp(x)                 # exact: x = m*2^e, 1/2 <= m < 1
+    m = m * 2.0
+    e = e.astype(np.int64) - 1
+    # Bias the bin coordinate downward.  At an exact table boundary this deliberately uses
+    # the preceding center; just below a boundary it prevents a rounded product from choosing
+    # c>m.  The residual bound therefore permits equality at its stated dyadic maximum.
+    coord = np.nextafter((m - 1.0) * _TABLE_N, -np.inf)
+    j = np.floor(coord).astype(np.int64)
+    j = np.clip(j, 0, _TABLE_N - 1)
+    c = 1.0 + j.astype(np.float64) / _TABLE_N
+
+    # m and c are dyadic; the subtraction is exact by Sterbenz.  The division is widened.
+    num = m - c
+    den = m + c
+    zlo = np.maximum(_dn(num / den), 0.0)
+    zhi = _up(num / den)
+    z = (zlo, zhi)
+    z2 = mul_nn(z, z)
+    power = z
+    series = (np.zeros_like(m), np.zeros_like(m))
+    for k in range(1):
+        series = add(series, smul_nn(_RESID_COEFF[k], power))
+        power = mul_nn(power, z2)
+    ln_lo = np.maximum(series[0], 0.0)
+    ln_hi = _up(series[1] + _RESID_REM_HI)
+    residual = mul_nn((ln_lo, ln_hi), (INV_LN2_LO, INV_LN2_HI))
+    ef = e.astype(np.float64)
+    # Add the integer exponent to the table value first.  This avoids forming a value near
+    # one and then cancelling it when x is just below one; each addition is widened once.
+    base_lo = _dn(ef + _LOGC_LO[j])
+    base_hi = _up(ef + _LOGC_HI[j])
+    lo = _dn(base_lo + residual[0])
+    hi = _up(base_hi + residual[1])
+    return lo, hi
+
+
 def log2(a, floor=1e-300):
     """log2 of a non-negative interval, clamped below at `floor` (monotone increasing)."""
-    lo = np.log2(np.maximum(a[0], floor))
-    hi = np.log2(np.maximum(a[1], floor))
-    return (_dnk(lo, LOG2_ULP), _upk(hi, LOG2_ULP))
-
-
-INV_LN2_LO = _dn(np.float64(1.4426950408889634))   # 1/ln 2, both sides
-INV_LN2_HI = _up(np.float64(1.4426950408889634))
+    same_endpoint = a[0] is a[1]
+    lo = np.maximum(a[0], np.float64(floor))
+    if same_endpoint:
+        return _log2_point(lo)
+    hi = np.maximum(a[1], np.float64(floor))
+    return _log2_point(lo)[0], _log2_point(hi)[1]
 
 
 def negxlog2x(a):
@@ -123,13 +213,13 @@ def negxlog2x(a):
 
     f is concave with its maximum at x = 1/e; f(0) = 0."""
     lo_, hi_ = np.maximum(a[0], 0.0), np.maximum(a[1], 0.0)
-    # log2 of each endpoint ONCE, then reuse for both the upper and the lower branch
-    l_lo = np.log2(np.maximum(lo_, 1e-300))
-    l_hi = np.log2(np.maximum(hi_, 1e-300))
-    fa_u = _up(-lo_ * _dnk(l_lo, LOG2_ULP))
-    fb_u = _up(-hi_ * _dnk(l_hi, LOG2_ULP))
-    fa_d = _dn(-lo_ * _upk(l_lo, LOG2_ULP))
-    fb_d = _dn(-hi_ * _upk(l_hi, LOG2_ULP))
+    # Enclose log2 of each endpoint once, then reuse both sides.
+    l_lo = log2((lo_, lo_))
+    l_hi = log2((hi_, hi_))
+    fa_u = _up(-lo_ * l_lo[0])
+    fb_u = _up(-hi_ * l_hi[0])
+    fa_d = _dn(-lo_ * l_lo[1])
+    fb_d = _dn(-hi_ * l_hi[1])
     INV_E = 0.36787944117144233
     peak = np.float64(_up(INV_E * INV_LN2_HI))          # f(1/e) = 1/(e ln2)
     contains = (lo_ <= INV_E) & (hi_ >= INV_E)
@@ -151,7 +241,7 @@ def glog(a, floor=1e-300):
 
 
 def validate_log2(rng, ntest=20000):
-    """spot-check the LOG2_ULP widening against mpmath at 200 bits."""
+    """Diagnostic comparison of the proved enclosure against mpmath at 200 bits."""
     from mpmath import mp, mpf, log as mlog
     mp.prec = 200
     xs = np.concatenate([
@@ -167,5 +257,6 @@ def validate_log2(rng, ntest=20000):
         if x <= 0: continue
         t = mlog(mpf(float(x))) / ln2
         if not (mpf(float(lo[i])) <= t <= mpf(float(hi[i]))): bad += 1
-        worst = max(worst, float(abs(t - mpf(float(np.log2(x))))) / max(abs(float(t)), 1e-300))
+        mid = (float(lo[i]) + float(hi[i])) / 2
+        worst = max(worst, float(abs(t - mpf(mid))) / max(abs(float(t)), 1e-300))
     return bad, worst

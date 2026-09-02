@@ -74,7 +74,7 @@ if __name__ == '__main__':
         if hb.ndim != 1 or hb.size > n or (hb.size & (hb.size - 1)):
             raise ValueError('BDC_BIAS must be a power-of-two one-dimensional bias no longer than 2^m')
         h = hb
-        print(f'  lifted bias {bias_path}: 2^{int(np.log2(hb.size))} -> 2^{m}', flush=True)
+        print(f'  lifted bias {bias_path}: 2^{hb.size.bit_length()-1} -> 2^{m}', flush=True)
     else:
         a0 = shm.SharedMemory(create=True, size=n * 4); a1 = shm.SharedMemory(create=True, size=n * 4)
         ctr = Value('i', 0); nP = 1 << (m - m1)
@@ -107,6 +107,15 @@ if __name__ == '__main__':
                    args=(hs.name, hn, n, dnum, dden, L, k, m, m1f, w, ctr2, nPf, res, i))
            for i in range(nproc)]
     for p in ps2: p.start()
+    last_report = time.time()
+    while any(p.is_alive() for p in ps2):
+        for p in ps2:
+            p.join(timeout=0.2)
+        if time.time() - last_report >= 60:
+            with ctr2.get_lock(): done = ctr2.value
+            print(f'  interval progress: {min(done, nPf)}/{nPf} prefix blocks '
+                  f'({100*min(done, nPf)/nPf:.1f}%)', flush=True)
+            last_report = time.time()
     for p in ps2: p.join()
     if [q for q in ps2 if q.exitcode != 0]: raise RuntimeError('interval workers failed')
     best = max(res[:])

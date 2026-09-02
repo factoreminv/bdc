@@ -8,12 +8,12 @@ output beside the result.
     python tools/print_environment.py                       # print
     python tools/print_environment.py -o env.json           # print and save
 
-The floating-point section matters because the upper-bound interval arithmetic is only
-valid under the contract stated in the top-level README: IEEE-754 binary64 with
-round-to-nearest-even, no unsafe reassociation, no fast-math contraction, subnormals
-preserved, and a platform ``log2`` accurate to within four ulps.  The checks below are
-empirical probes of that contract on the current machine.  They are diagnostics: passing
-them does not prove the contract holds for every argument reached in a 2^30-state replay.
+The floating-point section matters because the upper-bound interval arithmetic requires
+IEEE-754 binary64 with round-to-nearest-even, no unsafe reassociation or fast-math
+contraction, and preserved subnormals.  The verifier's logarithm is now a self-contained
+range-reduced rational-series enclosure and does not call the platform ``log2``.  The checks
+below are diagnostics of the implementation and execution environment; the analytic
+enclosure proof is recorded in the manuscript and top-level README.
 """
 from __future__ import annotations
 
@@ -85,18 +85,17 @@ def _fp_probes() -> dict:
     a = np.array([1.0, 1e16, -1e16], dtype=np.float64)
     probes["sum_not_reassociated"] = bool(float(a[0] + a[1] + a[2]) == 0.0)
 
-    # log2 faithfulness on the current libm, sampled against 200-bit mpmath, using the
-    # repository's own diagnostic when it is importable.
+    # Diagnostic comparison of the self-contained log2 enclosure with 200-bit mpmath.
     try:
         sys.path.insert(0, "upper")
-        from src.ivl import validate_log2, LOG2_ULP  # type: ignore
+        from src.ivl import validate_log2  # type: ignore
         bad, worst = validate_log2(np.random.default_rng(0), ntest=20000)
-        probes["log2_widening_ulps"] = int(LOG2_ULP)
+        probes["log2_implementation"] = "rational-table plus bounded atanh residual"
         probes["log2_enclosure_failures"] = int(bad)
         probes["log2_worst_relative_deviation"] = float(worst)
         probes["log2_note"] = (
-            "sampled diagnostic on this libm; not a proof of the four-ulp contract "
-            "for every argument reached in the exhaustive replay"
+            "sampled diagnostic only; soundness comes from the rational-series remainder "
+            "and outward binary64 operations, not from this comparison"
         )
     except Exception as exc:  # pragma: no cover - diagnostic only
         probes["log2_probe_error"] = repr(exc)

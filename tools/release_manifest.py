@@ -40,11 +40,11 @@ def main() -> None:
     ap.add_argument("-o", "--output", type=Path, default=Path("RELEASE_MANIFEST.json"))
     args = ap.parse_args()
 
-    # The manifest cannot meaningfully contain its own hash, so it is excluded and
-    # `tools/check_consistency.py` instead checks that this list covers every other
-    # tracked file.  Run this generator *after* staging, since `git ls-files` reads
-    # the index.
-    tracked = sorted(p for p in git("ls-files").splitlines()
+    # The manifest cannot meaningfully contain its own hash, so it is excluded. Include
+    # nonignored new files as well as indexed files, allowing a release candidate to be
+    # sealed before it is staged.
+    tracked = sorted(p for p in git("ls-files", "--cached", "--others",
+                                    "--exclude-standard").splitlines()
                      if Path(p).is_file() and p != "RELEASE_MANIFEST.json")
     upper = json.loads(Path("upper/results/rigor_d0.65_L6_k6_m30_manifest.json").read_text())
     lower = json.loads(Path("lower/out/rigorous_lower_certificate.json").read_text())
@@ -88,10 +88,10 @@ def main() -> None:
             p for p in tracked if p.startswith("environment/")
         ),
         "standing_assumptions": [
-            "Platform log2 within four ulps on every argument reached; see "
-            "upper/LOG2_CONTRACT.md.",
             "IEEE-754 round-to-nearest, no unsafe reassociation, no fast-math, no "
             "flush-to-zero.",
+            "The self-contained logarithm enclosure uses the exact rational construction "
+            "and positive remainder proved in upper/LOG2_CONTRACT.md.",
             "The environment that produced the stored certificates was not recorded; "
             "see environment/README.md.",
         ],

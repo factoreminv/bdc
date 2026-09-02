@@ -36,8 +36,8 @@ LEAN_THEOREMS = {
     "geom_sum_le_inv", "geom_tail", "assembly", "extend_in_d",
 }
 ARITHMETIC_PHRASES = [
-    "NumPy binary64 interval endpoints", "300-bit", "four ulps",
-    "diagnostic, not a proof", "round-to-nearest", "fast-math", "flush-to-zero",
+    "NumPy binary64 interval endpoints", "300-bit", "16384-entry",
+    "regression test, not a premise", "round-to-nearest", "fast-math", "flush-to-zero",
     "reassociation", "search procedures",
     "does not assume that either search converged",
     "does not repeat the `2^30`-state Bellman calculation",
@@ -117,7 +117,8 @@ def main() -> int:
         import hashlib
         import subprocess
         tracked = {p for p in subprocess.run(
-            ["git", "ls-files"], capture_output=True, text=True, check=True
+            ["git", "ls-files", "--cached", "--others", "--exclude-standard"],
+            capture_output=True, text=True, check=True
         ).stdout.split() if Path(p).is_file()} - {"RELEASE_MANIFEST.json"}
         listed = set(rm["tracked_files"])
         check("manifest covers every tracked file", tracked <= listed,
@@ -141,7 +142,7 @@ def main() -> int:
               rm["certificate_endpoints"]["upper"]["theorem_decimal"] == UPPER_DECIMAL)
         check("manifest quotes the lower endpoint",
               rm["certificate_endpoints"]["lower"]["theorem_decimal"] == LOWER_DECIMAL)
-        check("manifest records the log2 assumption",
+        check("manifest records the self-contained log2 enclosure",
               any("LOG2_CONTRACT" in a for a in rm["standing_assumptions"]))
 
     print("\narithmetic and scope")

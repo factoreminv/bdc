@@ -46,12 +46,14 @@ def _g4(s: arb) -> arb:
 
 
 def correction_m4_arb(a, P, Kmax=400, ds="0.002", lo="-200", hi="200", qbits=176):
-    """Rigorous lower bound for the four-run segmentation contribution.
+    """Rigorous lower bound for the four-run segmentation-type contribution.
 
     The range restriction and uncertain-bin rejection only delete nonnegative summands.
     Histogram masses are floor(Q*f), so exact integer convolution is coefficientwise no
     larger than the true convolution.  Since g4 is nonnegative and increasing, its value at
-    the lower endpoint of the two-bin Minkowski cell is a valid kernel lower bound.
+    the lower endpoint of the two-bin Minkowski cell is a valid kernel lower bound.  The
+    binomial sums in the type weights sum out within-type count allocations; this is a
+    contribution to H(T|W,Z), not to the complete-state entropy.
     """
     aa = [_a(x) for x in np.asarray(a, float)]
     pp0 = [_a(x) for x in np.asarray(P, float)]
@@ -215,11 +217,13 @@ def _kernel_c(u: arb, y: arb) -> arb:
 
 
 def correction_t2_arb(a, P, Kmax=60, ds="0.5", lo="-80", hi="80", qbits=200):
-    """Rigorous coarse depth-two correction using exact 2-D integer convolution.
+    """Rigorous coarse depth-two type correction using exact 2-D integer convolution.
 
     The three kernels have simple coordinate monotonicities: ``a`` increases in both
     coordinates, ``b`` increases in x and decreases in y, and ``c`` increases in both u
-    and y.  Their cell minima are therefore evaluated at proved corners, not sampled.
+    and y.  Their cell minima are therefore evaluated at proved corners, not sampled.  The
+    type weights have already summed out the compatible within-type count allocations, so
+    the result is a retained part of H(T|W,Z).
     """
     aa = [_a(x) for x in np.asarray(a, float)]
     pp0 = [_a(x) for x in np.asarray(P, float)]

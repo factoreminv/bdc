@@ -51,6 +51,10 @@ jobs:
       - name: Record the environment
         run: python tools/print_environment.py -o environment-ci.json
 
+      - name: Self-contained logarithm enclosure diagnostics
+        working-directory: upper
+        run: python -m src.test_log2_enclosure
+
       # The lower checks need nothing beyond the repository, so they run first and give
       # fast feedback.  The generator overwrites out/rigorous_lower_certificate.json;
       # the following step requires that the regenerated file still verifies.

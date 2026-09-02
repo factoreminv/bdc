@@ -79,7 +79,7 @@ computationally substantial and uses approximately the elapsed time reported in 
 on the original machine:
 
 ```sh
-(cd upper && BDC_NP=12 BDC_M1F=14 \
+(cd upper && BDC_NP=12 BDC_M1F=9 \
   BDC_BIAS=results/bias_d0.65_L6_k6_m28.npy \
   python -m src.audit_rigor 13 20 6 6 30 results/q_d0.65_L6_k6_kraft.npz)
 ```
@@ -95,12 +95,11 @@ to add an assumption.
 | disk | 1.0 GiB for the release asset, plus ~0.5 MiB of repository content | measured |
 | peak RAM | 6.07 GiB peak memory footprint; 4.30 GiB largest single process | **measured** on the verification machine (`/usr/bin/time -l`, 2026-09-01) |
 | processes | 12 (`BDC_NP=12`), one per core | the archived command |
-| wall time | 7,996 s on the original machine; **19,502 s measured** on a 12-core Apple M-series | manifest `interval_elapsed_seconds`; measured replay 2026-09-01 |
+| wall time | **10,004 s** for the current self-contained-log replay; 19,502 s for the historical platform-log replay on the same 12-core Apple M-series | current manifest; replay records dated 2026-09-02 and 2026-09-01 |
 | CPU time | 71,435 s user + 76,227 s system | measured; the large system share is page traffic against the 2 GiB shared potential, so the run is memory-bound and does not saturate 12 cores |
 
-Budget for wall time well above the manifest figure: the identity of the machine that
-produced the archived 7,996 s was never recorded, and a 12-core Apple M-series took
-**2.4x longer**. Elapsed time is not part of the claim.
+Elapsed time is not part of the claim. The smaller prefix block used by the current command
+improves cache behavior and offsets part of the cost of the self-contained logarithm.
 
 Set `BDC_NP` to the core count you have; fewer cores raise the wall time roughly in
 proportion and lower the worker memory. `BDC_M1F` sets the leaf-batch size (`2^BDC_M1F`
@@ -122,16 +121,13 @@ Bellman inequalities. It does not assume that either search converged or found a
 
 The Bellman replay uses NumPy binary64 interval endpoints. Elementary operations are widened
 as specified in `upper/src/ivl.py`, and reordered reductions receive a Higham error bound.
-The separate Kraft check uses 300-bit `mpmath`. Entropy logarithms in the Bellman pass use
-NumPy `log2` widened by four ulps. Accordingly, the result relies on an IEEE-754
-round-to-nearest environment without fast-math, unsafe reassociation, or flush-to-zero, and
-on a four-ulp error bound for the platform `log2`. The function `validate_log2` compares
-selected inputs against 200-bit `mpmath`; this is a diagnostic, not a proof of the library
-contract. The original manifest does not record a complete compiler and libm identity.
-`upper/LOG2_CONTRACT.md` states this assumption precisely, records how many logarithms a full
-replay evaluates, and reports measured throughput for the correctly-rounded replacements that
-would remove it. No replacement has been integrated, so the four-ulp contract remains an
-open assumption of the converse.
+The separate Kraft check uses 300-bit `mpmath`. Entropy logarithms do not call NumPy `log2`
+or any platform transcendental. They use exact power-of-two range reduction, a 16384-entry
+table generated from exact rational atanh-series bounds, and a one-term residual series with
+an explicit positive remainder. `upper/LOG2_CONTRACT.md` gives the derivation. The result
+therefore relies on IEEE-754 round-to-nearest without fast-math, unsafe reassociation, or
+flush-to-zero, but no longer assumes an ulp bound for a platform `log2`. The mpmath comparison
+in `python -m src.test_log2_enclosure` is a regression test, not a premise of soundness.
 
 ## Lower bound
 
@@ -147,6 +143,13 @@ and exact integer-polynomial convolutions:
 The generator overwrites `out/rigorous_lower_certificate.json`. Its final lower endpoint must
 be at least `0.12415`. Truncated positive contributions are omitted, while subtracted tails
 are bounded from above, so every rounding and truncation weakens the claimed lower bound.
+
+The functions `correction_m4_arb` and `correction_t2_arb` compute segmentation-type
+entropies. Their likelihood weights sum over the compatible multinomial allocations of an
+observed count within each type. In the manuscript notation, the complete hidden state is
+`(T,Q)`, the classical baseline accounts for the allocation term `H(Q|T,W,Z)`, and these
+corrections retain a one-sided part of `H(T|W,Z)`. They must not be interpreted as direct
+lower bounds on the entropy of the complete count-allocation state.
 
 ## Lean 4
 

@@ -1,21 +1,22 @@
 {
   "theorem_decimal": "0.250984",
-  "theta_hi_over_one_minus_d": 0.25098375532964956,
+  "theta_hi_over_one_minus_d": 0.250983755329845,
   "d": "13/20",
   "L": 6,
   "k": 6,
   "m": 30,
   "states_checked": 1073741824,
   "actions_per_state": 2,
-  "interval_elapsed_seconds": 7996,
+  "interval_elapsed_seconds": 10004,
   "bias_state_bits": 28,
   "endpoint_selection": "coefficientwise",
   "test_measure": "q_d0.65_L6_k6_kraft.npz",
   "result_archive": "rigor_d0.65_L6_k6_m30.npz",
-  "replay_command": "BDC_NP=12 BDC_M1F=14 BDC_BIAS=results/bias_d0.65_L6_k6_m28.npy python -m src.audit_rigor 13 20 6 6 30 results/q_d0.65_L6_k6_kraft.npz",
+  "replay_command": "BDC_NP=12 BDC_M1F=9 BDC_BIAS=results/bias_d0.65_L6_k6_m28.npy python -m src.audit_rigor 13 20 6 6 30 results/q_d0.65_L6_k6_kraft.npz",
+  "logarithm_enclosure": "exact binary range reduction; 2^14-entry exact-rational atanh table; one-term residual with positive geometric remainder; no platform transcendental",
   "files": {
     "q_d0.65_L6_k6_kraft.npz": "beda6c275d184e6c13b215ce0a45a7582ecb0d8c9ec38f3c66f3cd96c638669b",
     "bias_d0.65_L6_k6_m28.npy": "964ee2dd5df9209a2a455e41f2691c7ae163eec16e6fe6343dc59470e375c0bc",
-    "rigor_d0.65_L6_k6_m30.npz": "9baef9f6ca6a5633219969b86c0033ed5a22e9732767e886c2a488eab2d93465"
+    "rigor_d0.65_L6_k6_m30.npz": "ce529f06f2cbaf7d7b11a3d13a13f54d5d363462445fc12dbb99fe570ef86fc0"
   }
 }

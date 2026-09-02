@@ -38,9 +38,21 @@ machine described in that file, together with its result. The regenerated
 different hardware and a newer NumPy than could have produced it. Wall time differed by a
 factor of 2.4 (19,502 s against the recorded 7,996 s); the claim does not depend on it.
 
-This is evidence that the upper calculation is portable. It is not evidence about the
-original environment, which remains unrecorded, and it does not discharge the platform
-`log2` assumption: the replay ran on a libm satisfying the same unproved contract.
+This historical replay used the earlier platform-`log2` implementation. It established
+reproduction of that archived calculation but did not discharge its four-ulp assumption.
+The current verifier has since replaced that call by the self-contained rational-series
+enclosure documented in `upper/LOG2_CONTRACT.md`; a new full replay must be recorded
+separately rather than rewriting this historical environment record.
+
+## Full replay with the self-contained logarithm
+
+`replay-self-contained-log-2026-09-02.json` records the replacement full replay on the same
+12-core Apple M-series machine. It evaluated both actions at all `2^30` states in 10,004 s
+and produced the normalized outward endpoint `0.250983755329845`, strictly below the theorem
+decimal `0.250984`. The result archive has SHA-256
+`ce529f06f2cbaf7d7b11a3d13a13f54d5d363462445fc12dbb99fe570ef86fc0`.
+This is the current certificate. Unlike the historical replay, its certified entropy
+calculation does not call a platform transcendental function.
 
 ## Recording the environment of a future replay
 
@@ -50,8 +62,7 @@ Run this immediately before a long calculation and keep the output beside the re
 python tools/print_environment.py -o environment/replay-$(date +%Y-%m-%d).json
 ```
 
-The record includes empirical probes of the arithmetic contract the upper bound depends
-on: round-to-nearest-even, preserved subnormals, no unsafe reassociation, and a sampled
-comparison of the platform `log2` against 200-bit `mpmath`. These probes are diagnostics.
-Passing them does not prove the contract holds for every argument reached in a
-2^30-state replay; see the arithmetic paragraph in the top-level `README.md`.
+The record includes empirical probes of round-to-nearest-even, preserved subnormals, and no
+unsafe reassociation, together with a comparison of the self-contained logarithm enclosure
+against 200-bit `mpmath`. These probes are diagnostics. The logarithm proof itself is the
+exact rational construction and remainder bound in `upper/LOG2_CONTRACT.md`.
