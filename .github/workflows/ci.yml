@@ -24,7 +24,9 @@ jobs:
           # exactly propext, Classical.choice, and Quot.sound.
           axiom-audit: 'true'
           axiom-audit-allow: 'propext,Classical.choice,Quot.sound'
-          axiom-audit-root: 'BDC'
+          # A MODULE prefix, not a namespace: the declarations live in namespace BDC but
+          # in module Bdcproof.Cert, under the Bdcproof library root.
+          axiom-audit-root: 'Bdcproof'
 
   python:
     name: Python short checks

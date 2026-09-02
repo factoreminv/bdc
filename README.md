@@ -157,7 +157,7 @@ With Lean and Lake installed:
 ```
 
 The project contains no `sorry`, and continuous integration enforces it: the Lean job audits
-every `BDC` declaration and fails if any reaches an axiom outside `propext`,
+every declaration in the `Bdcproof` library and fails if any reaches an axiom outside `propext`,
 `Classical.choice`, `Quot.sound`. Lean proves the Bellman telescoping implication, a
 geometric tail inequality, an abstract upper-bound assembly lemma, the
 monotonicity-extension algebra conditional on the cited monotonicity result, preservation of

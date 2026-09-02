@@ -1,8 +1,8 @@
 {
-  "generated_utc": "2026-09-01T23:29:39.175523+00:00",
+  "generated_utc": "2026-09-02T01:25:12.107914+00:00",
   "what_this_is": "SHA-256 of every tracked file, the release asset, and the certificate endpoints, so a reader can authenticate the supplement as a whole.",
-  "source_commit": "1048e77630cbf3ad1659c695387efa111cceb55c",
-  "source_commit_subject": "Record a full 2^30-state replay that reproduced the archived result exactly",
+  "source_commit": "083a5f5df04d0b6b7c792f1f269de82c09e95203",
+  "source_commit_subject": "Say when the replay probes were actually taken",
   "source_commit_note": "The commit whose tree was hashed.  The commit carrying this file is its child; tracked_files is what pins the content.",
   "release_asset": {
     "name": "bias_d0.65_L6_k6_m28.npy",
@@ -38,11 +38,11 @@
   ],
   "tracked_files_note": "Every tracked file except RELEASE_MANIFEST.json itself, which cannot contain its own hash.",
   "tracked_files": {
-    ".github/workflows/ci.yml": "1ae2eb09bc804149b93e729d31898d40f9595b975e9842f22353fc948766861e",
+    ".github/workflows/ci.yml": "c48a68a2b2d906595df4e912b2903f3ab409d3a7a439bdfc51ef880fe68707bf",
     ".gitignore": "d5c99110e4575a038ac49b8ad309e397daec3fca4f1d8fce35c3bf83c7a3797e",
     "CITATION.cff": "da91250cd716337986d75705fc15ad7bb5aa154d4ccee581b3f7e2341cd5a38f",
     "LICENSE": "0690c7e5a7f526be2354b22d4b9e2434e3afdf2d436f3838bd60cdfcfea13519",
-    "README.md": "78eb4e7e63ce2cfb7f07f4805f9a08d262ced30320860a24945868ce26367a60",
+    "README.md": "ea40c6ef6349769b36dd5b6d0848e842044ff62f38d19b54621865a3c51c6265",
     "environment/README.md": "fc64e6c31f549ea61800859ef812da4b9e8e7d61f0373f5b38357ca6e6d6373f",
     "environment/replay-2026-09-01.json": "12787a1868bc17785c88005cb8013a1b7918f5a3bdbcf921ab6be0798b383e16",
     "environment/requirements-tested-2026-09-01.txt": "2521edaef7057fc944ff7556407218f6a4172ab3e62082c74f5c392c4f47e586",
