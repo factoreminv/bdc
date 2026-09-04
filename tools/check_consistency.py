@@ -104,7 +104,8 @@ def main() -> int:
           not re.search(r"0\.31330422|0\.15665211", cert))
     check("no sorry or admit in the Lean sources",
           not any(re.search(r"\b(sorry|admit)\b", p.read_text())
-                  for p in Path("lean").rglob("*.lean")))
+                  for p in Path("lean").rglob("*.lean")
+                  if ".lake" not in p.parts))
     for phrase in LEAN_SCOPE_PHRASES:
         check(f"README states: {phrase}", phrase in readme)
 

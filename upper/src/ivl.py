@@ -173,11 +173,15 @@ def _log2_point(x):
     j = np.clip(j, 0, _TABLE_N - 1)
     c = 1.0 + j.astype(np.float64) / _TABLE_N
 
-    # m and c are dyadic; the subtraction is exact by Sterbenz.  The division is widened.
+    # m and c are dyadic and the subtraction is exact by Sterbenz, but m + c is NOT
+    # exact in general: m carries 52 fractional bits and the sum lands in [2,4), so one
+    # bit is lost.  The quotient therefore carries TWO roundings, and a one-ulp widening
+    # does not cover it -- measured, _dn(num/den) exceeds the true z for ~0.4% of inputs.
+    # Widen by two units in each direction.
     num = m - c
     den = m + c
-    zlo = np.maximum(_dn(num / den), 0.0)
-    zhi = _up(num / den)
+    zlo = np.maximum(_dnk(num / den, 2), 0.0)
+    zhi = _upk(num / den, 2)
     z = (zlo, zhi)
     z2 = mul_nn(z, z)
     power = z
