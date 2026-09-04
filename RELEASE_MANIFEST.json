@@ -1,8 +1,8 @@
 {
-  "generated_utc": "2026-09-03T02:16:20.219940+00:00",
+  "generated_utc": "2026-09-04T02:31:08.248025+00:00",
   "what_this_is": "SHA-256 of every tracked file, the release asset, and the certificate endpoints, so a reader can authenticate the supplement as a whole.",
-  "source_commit": "99ae988a66092c536fd17f70c3a55b5d45b0a813",
-  "source_commit_subject": "Elide the interpreter path when recording an environment",
+  "source_commit": "cb223df2accca6feeb2b15141cd01832303f0619",
+  "source_commit_subject": "Widen the log2 quotient by two units; exclude .lake from the sorry scan",
   "source_commit_note": "The commit whose tree was hashed.  The commit carrying this file is its child; tracked_files is what pins the content.",
   "release_asset": {
     "name": "bias_d0.65_L6_k6_m28.npy",
@@ -21,7 +21,7 @@
     },
     "lower": {
       "theorem_decimal": "0.12415",
-      "kappa_lower": "[0.124158533165909418489953819593246278252656887220597199710 +/- 5.28e-59]",
+      "kappa_lower": "[0.124158533165909418489953819593246278252656887220597199712 +/- 3.95e-58]",
       "law_sha256": "60bb22a88a2c8e0e4d3a36f694f63d6a18e4cc832cfef08854eab6dd300f8d70"
     }
   },
@@ -55,8 +55,8 @@
     "lean/lakefile.toml": "0bd68ce2cac41931db9e5ffa45fb962058feba046a8ceb6b79c009b05373575b",
     "lean/lean-toolchain": "8190e75a201741065fe508b28955dd64dd72d090babe5f70ce6848879d68ae88",
     "lower/out/P_CERT_BEST.npy": "60bb22a88a2c8e0e4d3a36f694f63d6a18e4cc832cfef08854eab6dd300f8d70",
-    "lower/out/rigorous_lower_certificate.json": "2ece03030ed6f6b2fbae44e2ad112e35cb3f548715f418dff928110fef8c84c4",
-    "lower/rigorous_lower.py": "2912f5b0f9987bb6f329b42dd0df24a74db8e54f3039193d4dd4d13cae7d5def",
+    "lower/out/rigorous_lower_certificate.json": "69bface2f37f08d7392506141ca89d10d43903fbcc292dd928ded819d3de3011",
+    "lower/rigorous_lower.py": "60b83cae2280153a0cc4a53028b620e8b846681eedc9aa82967d3e7329d07a3d",
     "lower/run_rigorous_final.py": "6dbcc7c52568cd6e539fe4c411c5c030141322a781f6f71bdbec164627d72900",
     "lower/test_rigorous_certificate.py": "d082466e24c87e0c8bad91838a3840a01605b8a3b07a1b1fb7cc3c95423b7d92",
     "lower/verify_rigorous_certificate.py": "d0856deeb949ead1f7fe0adbc303a3758aac75e2434b3203a0e70bfa980953e8",
