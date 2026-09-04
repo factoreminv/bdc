@@ -27,6 +27,11 @@ At an exact table boundary it deliberately selects the preceding cell. Thus
 0 <= z <= 1/(2N).
 ```
 
+The subtraction `m-c` is exact by Sterbenz, but `m+c` is **not** exact in general: `m` carries
+52 fractional bits and the sum lands in `[2,4)`, so one bit is lost. The quotient `(m-c)/(m+c)`
+therefore carries two roundings, not one, and a one-unit widening does not cover it. The code
+widens it by two units in each direction (`_dnk(..., 2)` / `_upk(..., 2)`).
+
 For `|z|<1`, the atanh series gives
 
 ```text

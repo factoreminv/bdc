@@ -40,9 +40,16 @@ def _certain_bin(x: arb, origin: arb, step: arb, nbins: int) -> int | None:
 
 
 def _g4(s: arb) -> arb:
-    """(1+exp(s))*h(sigmoid(s)), in bits; this function is increasing."""
-    e = s.exp()
-    return ((1 + e) * (1 + e).log() - e * s) / LN2
+    """(1+exp(s))*h(sigmoid(s)), in bits; this function is increasing.
+
+    Written as log2(1+e^s) + e^s*log2(1+e^-s).  The algebraically equal form
+    ((1+e^s)log(1+e^s) - e^s*s)/ln2 cancels about 2s/ln2 bits: at 192-bit precision its
+    Arb ball radius overtakes the value near s = 135, after which the ball straddles zero
+    and the caller's `gl > 0` test silently discards the cell.  That is sound but lossy,
+    and the loss is invisible because it looks like a weaker certificate rather than a
+    numerical failure.  This form has no cancellation for either sign of s.
+    """
+    return ((1 + s.exp()).log() + s.exp() * (1 + (-s).exp()).log()) / LN2
 
 
 def correction_m4_arb(a, P, Kmax=400, ds="0.002", lo="-200", hi="200", qbits=176):
